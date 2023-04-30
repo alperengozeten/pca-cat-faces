@@ -78,6 +78,17 @@ class PCA:
     
     def check(self):
         return (self.cov @ self.sorted_eigVectors[:, 0]) - self.sorted_eigVals[0] * self.sorted_eigVectors[:, 0]
+    
+    def transform_image(self, X : np.ndarray, k: int):
+        components = self.sorted_eigVectors[:, 0: k]
+        print(X.shape)
+        print(components.shape)
+        print(self.mean.shape)
+        return (X - self.mean).reshape((1, 4096)) @ components
+    
+    def reconstruct_image(self, X : np.ndarray, k: int):
+        components = self.sorted_eigVectors[:, 0: k]
+        return X @ components.T + self.mean
 
 r_pca = PCA()
 r_pca.apply(out[:, :, 0])
@@ -123,3 +134,34 @@ for index, component in enumerate(stacked_components):
     component = component.reshape((64, 64, -1))
     ax[row, col].imshow(component)
 plt.show()
+
+# Question 1.2
+orig_image = load_single_image(path.join(DATA_DIR, 'flickr_cat_000002.jpg'))
+
+r_transformed = r_pca.transform_image(orig_image[..., 0], 50)
+r_reconstructed = r_pca.reconstruct_image(r_transformed, 50)
+
+g_transformed = g_pca.transform_image(orig_image[..., 1], 50)
+g_reconstructed = g_pca.reconstruct_image(g_transformed, 50)
+
+b_transformed = b_pca.transform_image(orig_image[..., 2], 50)
+b_reconstructed = b_pca.reconstruct_image(b_transformed, 50)
+
+reconstructed_image = np.stack([r_reconstructed, g_reconstructed, b_reconstructed], axis=-1)
+
+def plot_image(im: np.ndarray, title=None, cmap=None):
+    """
+    Plots an image preprocessed by the load_and_preprocess_image
+    
+    :param im: the image array with shape (4096, 3)
+    """
+    plt.figure()
+    im = im.reshape((64, 64, -1))
+    im = (im - im.min()) / (im.max() - im.min())
+    if title:
+        plt.title(title)
+    plt.axis('off')
+    plt.imshow(im, cmap=cmap)
+    plt.show()
+
+plot_image(reconstructed_image, title=f'Reconstructed image (k = {5})')
