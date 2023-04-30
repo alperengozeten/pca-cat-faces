@@ -3,8 +3,8 @@ import numpy as np
 
 from PIL import Image
 from os import path
-from typing import Iterator
 from numpy.linalg import eig
+import matplotlib.pyplot as plt
 
 # get the current working directory
 ROOT_DIR = path.abspath(os.curdir)
@@ -27,7 +27,6 @@ print(out.shape)
 print(out[0].shape)
 
 class PCA:
-
     def __init__(self) -> None:
         self.mean = None
 
@@ -40,6 +39,7 @@ class PCA:
 
         #calculate the covariance matrix
         covX = (X.T @ X) / X.shape[0]
+        self.cov = covX
 
         # calculate the eigenvalues and eigenvectors
         eigenVals, eigenVectors = eig(covX)
@@ -65,6 +65,19 @@ class PCA:
         # get the cumulative ratios
         cum_ratios = np.cumsum(self.sorted_eigVals) / np.sum(self.sorted_eigVals)
         return np.searchsorted(cum_ratios, f)
+    
+    # get the first k PCs after scaling them with min-max
+    def min_max_scaled_components(self, k : int):
+        result_vectors = []
+        for i in range(k):
+            vec = self.sorted_eigVectors[:, i]
+            vec = np.reshape(vec, (64, 64))
+            vec = (vec - vec.min()) / (vec.max() - vec.min())
+            result_vectors.append(vec)
+        return np.stack(result_vectors, axis=0)
+    
+    def check(self):
+        return (self.cov @ self.sorted_eigVectors[:, 0]) - self.sorted_eigVals[0] * self.sorted_eigVectors[:, 0]
 
 r_pca = PCA()
 r_pca.apply(out[:, :, 0])
@@ -95,3 +108,18 @@ print('Total explained variance by first 10 components: ' + str(np.sum(b_explain
 print('The total number of principal components to ensure %70 explained variance: ' + str(b_pca.cumulative_explained_variance(0.7)))
 
 # Question 1.2
+r_components = r_pca.min_max_scaled_components(10)
+g_components = g_pca.min_max_scaled_components(10)
+b_components = b_pca.min_max_scaled_components(10)
+
+stacked_components = np.stack([r_components, g_components, b_components], axis=-1)
+print(stacked_components.shape)
+
+#plt.clf()
+fig, ax = plt.subplots(nrows=5, ncols=2, figsize=(8, 20))
+for index, component in enumerate(stacked_components):
+    row, col = np.unravel_index(index, ax.shape)
+    ax[row, col].set_axis_off()
+    component = component.reshape((64, 64, -1))
+    ax[row, col].imshow(component)
+plt.show()
