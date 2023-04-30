@@ -22,9 +22,6 @@ def load_all_images(dataset_path: str) -> np.ndarray:
 
 load_single_image(path.join(DATA_DIR, 'flickr_cat_000002.jpg'))
 out = load_all_images(DATA_DIR)
-print(type(out))
-print(out.shape)
-print(out[0].shape)
 
 class PCA:
     def __init__(self) -> None:
@@ -81,9 +78,6 @@ class PCA:
     
     def transform_image(self, X : np.ndarray, k: int):
         components = self.sorted_eigVectors[:, 0: k]
-        print(X.shape)
-        print(components.shape)
-        print(self.mean.shape)
         return (X - self.mean).reshape((1, 4096)) @ components
     
     def reconstruct_image(self, X : np.ndarray, k: int):
@@ -124,9 +118,7 @@ g_components = g_pca.min_max_scaled_components(10)
 b_components = b_pca.min_max_scaled_components(10)
 
 stacked_components = np.stack([r_components, g_components, b_components], axis=-1)
-print(stacked_components.shape)
 
-#plt.clf()
 fig, ax = plt.subplots(nrows=5, ncols=2, figsize=(8, 20))
 for index, component in enumerate(stacked_components):
     row, col = np.unravel_index(index, ax.shape)
@@ -138,30 +130,42 @@ plt.show()
 # Question 1.2
 orig_image = load_single_image(path.join(DATA_DIR, 'flickr_cat_000002.jpg'))
 
-r_transformed = r_pca.transform_image(orig_image[..., 0], 50)
-r_reconstructed = r_pca.reconstruct_image(r_transformed, 50)
-
-g_transformed = g_pca.transform_image(orig_image[..., 1], 50)
-g_reconstructed = g_pca.reconstruct_image(g_transformed, 50)
-
-b_transformed = b_pca.transform_image(orig_image[..., 2], 50)
-b_reconstructed = b_pca.reconstruct_image(b_transformed, 50)
-
-reconstructed_image = np.stack([r_reconstructed, g_reconstructed, b_reconstructed], axis=-1)
-
-def plot_image(im: np.ndarray, title=None, cmap=None):
-    """
-    Plots an image preprocessed by the load_and_preprocess_image
-    
-    :param im: the image array with shape (4096, 3)
-    """
+def plot_image(im: np.ndarray, title):
     plt.figure()
     im = im.reshape((64, 64, -1))
-    im = (im - im.min()) / (im.max() - im.min())
-    if title:
-        plt.title(title)
+
+    # normalize each channel of the image
+    channel1 = im[:, :, 0].reshape((64, 64))
+    channel1 = (channel1 - channel1.min()) / (channel1.max() - channel1.min())
+
+    channel2 = im[:, :, 1].reshape((64, 64))
+    channel2 = (channel2 - channel2.min()) / (channel2.max() - channel2.min())
+
+    channel3 = im[:, :, 2].reshape((64, 64))
+    channel3 = (channel3 - channel3.min()) / (channel3.max() - channel3.min())
+
+    im = np.stack([channel1, channel2, channel3], axis=-1)
+    #im = (im - im.min()) / (im.max() - im.min())
     plt.axis('off')
-    plt.imshow(im, cmap=cmap)
+    plt.title(title)
+    plt.imshow(im)
     plt.show()
 
-plot_image(reconstructed_image, title=f'Reconstructed image (k = {5})')
+plot_image(orig_image, title='Original Image')
+
+# Set of k values
+k_list = [1, 50, 250, 500, 1000, 4096]
+
+for k in k_list:
+    r_transformed = r_pca.transform_image(orig_image[:, 0], k)
+    r_reconstructed = r_pca.reconstruct_image(r_transformed, k)
+
+    g_transformed = g_pca.transform_image(orig_image[:, 1], k)
+    g_reconstructed = g_pca.reconstruct_image(g_transformed, k)
+
+    b_transformed = b_pca.transform_image(orig_image[:, 2], k)
+    b_reconstructed = b_pca.reconstruct_image(b_transformed, k)
+
+    reconstructed_image = np.stack([r_reconstructed, g_reconstructed, b_reconstructed], axis=-1)
+
+    plot_image(reconstructed_image, title=f'Reconstruction With k = {k} PCs')
