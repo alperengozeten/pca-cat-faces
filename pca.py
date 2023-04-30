@@ -42,11 +42,16 @@ class PCA:
         covX = (X.T @ X) / X.shape[0]
 
         # calculate the eigenvalues and eigenvectors
-        w, v = eig(covX)
+        eigenVals, eigenVectors = eig(covX)
 
         # sort the eigenvalues in descending order
-        w_sorted = np.sort(w)[::-1]
-        self.sorted_eigVals = w_sorted
+        idx = eigenVals.argsort()[::-1]   
+        eigenVals = eigenVals[idx]
+        eigenVectors = eigenVectors[:,idx]
+
+        # store the eigenvalues
+        self.sorted_eigVals = eigenVals
+        self.sorted_eigVectors = eigenVectors
     
     def find_explained_variance(self, k : int):
         return self.sorted_eigVals[0:10] / np.sum(self.sorted_eigVals)
