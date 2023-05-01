@@ -128,7 +128,7 @@ for index, component in enumerate(stacked_components):
     ax[row, col].imshow(component)
 plt.show()
 
-# Question 1.2
+# Question 1.3
 orig_image = load_single_image(path.join(DATA_DIR, 'flickr_cat_000002.jpg'))
 
 def plot_image(im: np.ndarray, title):
