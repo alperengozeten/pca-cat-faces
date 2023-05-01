@@ -121,7 +121,8 @@ stacked_components = np.stack([r_components, g_components, b_components], axis=-
 
 fig, ax = plt.subplots(nrows=5, ncols=2, figsize=(8, 20))
 for index, component in enumerate(stacked_components):
-    row, col = np.unravel_index(index, ax.shape)
+    row = index // 2
+    col = index % 2
     ax[row, col].set_axis_off()
     component = component.reshape((64, 64, -1))
     ax[row, col].imshow(component)
@@ -169,3 +170,8 @@ for k in k_list:
     reconstructed_image = np.stack([r_reconstructed, g_reconstructed, b_reconstructed], axis=-1)
 
     plot_image(reconstructed_image, title=f'Reconstruction With k = {k} PCs')
+
+    # Check if original and reconstructed images are identical within a tolerance
+    if k == 4096:
+        print(np.allclose(reconstructed_image, orig_image))
+       
