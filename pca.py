@@ -99,19 +99,19 @@ print('------- Red Channel -------\nIndividual explained variances of first 10 P
 r_explained_first = r_pca.find_explained_variance(10)
 print(r_explained_first)
 print('Total explained variance by first 10 components: ' + str(np.sum(r_explained_first)))
-print('The total number of principal components to ensure %70 explained variance: ' + str(r_pca.cumulative_explained_variance(0.7)))
+print('The minimum number of principal components to ensure %70 explained variance: ' + str(r_pca.cumulative_explained_variance(0.7)))
 
 print('------- Green Channel -------\nIndividual explained variances of first 10 PCs:')
 g_explained_first = g_pca.find_explained_variance(10)
 print(g_explained_first)
 print('Total explained variance by first 10 components: ' + str(np.sum(g_explained_first)))
-print('The total number of principal components to ensure %70 explained variance: ' + str(g_pca.cumulative_explained_variance(0.7)))
+print('The minimum number of principal components to ensure %70 explained variance: ' + str(g_pca.cumulative_explained_variance(0.7)))
 
 print('------- Blue Channel -------\nIndividual explained variances of first 10 PCs:')
 b_explained_first = b_pca.find_explained_variance(10)
 print(b_explained_first)
 print('Total explained variance by first 10 components: ' + str(np.sum(b_explained_first)))
-print('The total number of principal components to ensure %70 explained variance: ' + str(b_pca.cumulative_explained_variance(0.7)))
+print('The minimum number of principal components to ensure %70 explained variance: ' + str(b_pca.cumulative_explained_variance(0.7)))
 
 # Question 1.2
 r_components = r_pca.min_max_scaled_components(10)
