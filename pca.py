@@ -128,6 +128,8 @@ for index in range(len(stacked_components)):
     component = stacked_components[index, ...]
     component = component.reshape((64, 64, -1))
     ax[row, col].imshow(component)
+fig.tight_layout()
+plt.suptitle('The First 10 Principal Components')
 plt.show()
 
 # Question 1.3
