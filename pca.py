@@ -121,10 +121,11 @@ b_components = b_pca.min_max_scaled_components(10)
 stacked_components = np.stack([r_components, g_components, b_components], axis=-1)
 
 fig, ax = plt.subplots(nrows=5, ncols=2, figsize=(8, 20))
-for index, component in enumerate(stacked_components):
+for index in range(len(stacked_components)):
     row = index // 2
     col = index % 2
     ax[row, col].set_axis_off()
+    component = stacked_components[index, ...]
     component = component.reshape((64, 64, -1))
     ax[row, col].imshow(component)
 plt.show()
