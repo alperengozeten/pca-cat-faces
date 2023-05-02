@@ -22,6 +22,7 @@ def load_all_images(dataset_path: str) -> np.ndarray:
 
 load_single_image(path.join(DATA_DIR, 'flickr_cat_000002.jpg'))
 out = load_all_images(DATA_DIR)
+print('Dataset has been loaded succesfully!')
 
 class PCA:
     def __init__(self) -> None:
@@ -61,7 +62,7 @@ class PCA:
 
         # get the cumulative ratios
         cum_ratios = np.cumsum(self.sorted_eigVals) / np.sum(self.sorted_eigVals)
-        return np.searchsorted(cum_ratios, f)
+        return (np.searchsorted(cum_ratios, f) + 1) # +1 since this function returns the index
     
     # get the first k PCs after scaling them with min-max
     def min_max_scaled_components(self, k : int):
