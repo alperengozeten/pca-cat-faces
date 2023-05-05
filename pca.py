@@ -133,7 +133,8 @@ plt.suptitle('The First 10 Principal Components')
 plt.show()
 
 # Question 1.3
-orig_image = load_single_image(path.join(DATA_DIR, 'flickr_cat_000002.jpg'))
+# Reconstruct the second image by using different number of principal components
+orig_image = load_single_image(path.join(DATA_DIR, 'flickr_cat_000003.jpg'))
 
 def plot_image(im: np.ndarray, title):
     plt.figure()
