@@ -1,3 +1,4 @@
+- 21902464/Halil Alperen Gözeten
 - In order to run this program, Python must be installed on the computer. 
 - The dataset should be placed on the same path as the pca.py in a folder called 'afhq_cat', 
 and the program can be from the terminal simply with "py pca.py" on Windows
